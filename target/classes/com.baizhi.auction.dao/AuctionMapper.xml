@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- namesapce的值是dao接口的全限定名 -->
+<mapper namespace="com.baizhi.auction.dao.AuctionDao">
+	
+	<!-- 查询所有违背拍卖的商品 -->
+	<select id="allAuction" resultType="Auction" >
+		select a.*,ar.*
+		 from auction a left join auction_record ar 
+		 on a.auction_id = ar.auction_id
+		 where ar.user_id is null
+		 	<if test="auction != null and auction.auction_name != null and auction.auction_name !=''">
+				and auction_name like'%'||#{auction.auction_name}||'%'
+			</if>
+		 	<if test="auction != null and auction.auction_desc != null and auction.auction_desc !=''">
+				and auction_desc like '%'||#{auction.auction_desc}||'%'
+			</if>
+		 	<if test="auction != null and auction.auction_start_time != null">
+				and auction_start_time <![CDATA[ >= ]]> #{auction.auction_start_time}
+			</if>
+		 	<if test="auction != null and auction.auction_end_time != null">
+				and auction_end_time <![CDATA[ <= ]]> #{auction.auction_end_time}
+			</if>
+		 	<if test="auction != null and auction.auction_start_price != null">
+				and auction_start_price <![CDATA[ >= ]]> #{auction.auction_start_price}
+			</if>
+			order by a.auction_start_time
+	</select>
+	
+	<!-- 查询指定拍卖商品 -->
+	<select id="oneAuction" resultType="Auction">
+		select * from Auction where auction_id = #{auctionId}
+	</select>
+	
+	<!-- 添加拍卖商品（公布） -->
+	<insert id="addAuction">
+		insert into auction
+			values
+			  (auction_seq.nextval,
+			   #{auction_name},
+			   #{auction_start_price},
+			   #{auction_upset},
+			   #{auction_start_time},
+			   #{auction_end_time},
+			   #{auction_pic},
+			   #{auction_desc})
+	</insert>
+	
+	<!-- 删除拍卖商品 -->
+	<delete id="deleteAuction">
+		delete from auction where auction_id = #{auctionId}
+	</delete>
+	
+	<!-- 修改拍卖商品 -->
+	<update id="updateAuction">
+		update auction set
+			   auction_name=#{auction_name},
+			   auction_start_price=#{auction_start_price},
+			   auction_upset= #{auction_upset},
+			   auction_start_time=#{auction_start_time},
+			   auction_end_time=#{auction_end_time},
+			   <if test="auction_pic!=null and auction_pic!=''">
+			   		auction_pic=#{auction_pic},
+			   </if>
+			   auction_desc=#{auction_desc}
+		where  auction_id=#{auction_id}
+	</update>
+	
+	
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namesapce的值是dao接口的全限定名 -->
+<mapper namespace="com.baizhi.auction.dao.AuctionRecordDao">
+	<resultMap type="AuctionRecord" id="recordMap">
+		<result column="id" property="id"/>
+		<result column="user_id" property="user_id"/>
+		<result column="auction_id" property="auction_id"/>
+		<result column="auction_time" property="auction_time"/>
+		<result column="auction_price" property="auction_price"/>
+		
+		<association property="auctionUser" javaType="AuctionUser">
+			<result column="user_name" property="user_name"/>
+		</association>
+	</resultMap>
+
+
+	<!-- 竞拍 -->
+	<insert id="addRecourd">
+		insert into auction_record
+			values
+			  (auction_record_seq.nextval,
+			   #{auctionRecord.user_id},
+			   #{auctionRecord.auction_id},
+			   systimestamp,
+			   #{auctionRecord.auction_price})
+	</insert>
+
+	<!-- 刷新 ，出价记录 -->
+	<select id="auctionRecordList" resultMap="recordMap">
+		select *
+		  from (select t1.*, rownum r
+		          from (select ar.*, au.user_name
+		                  from auction_record ar
+		                  left join auction_user au
+		                    on ar.user_id = au.user_id
+		                 order by ar.auction_time desc) t1)
+		 where r <![CDATA[ >= ]]> #{start}
+		   and r <![CDATA[ <= ]]> #{end}
+		   and auction_id = #{auctionId}
+	</select>
+	
+	<!-- 查询出最高拍卖价 -->
+	<select id="maxAuctionPrice" resultType="Double">
+		select max(auction_price) from auction_record where auction_id=#{auctionId}
+	</select>
+
+</mapper>
