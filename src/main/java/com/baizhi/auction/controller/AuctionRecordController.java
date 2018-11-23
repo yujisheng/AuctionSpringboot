@@ -21,7 +21,7 @@ public class AuctionRecordController {
 	private AuctionService auctionService;
 	
 	
-	// ˢ�³��۱��б�
+	// 刷新列表
 	@RequestMapping("/auctionList")
 	public String auctionList(HttpServletRequest request,Integer auctionId){
 		System.out.println("auctionId = " + auctionId);
