@@ -20,8 +20,8 @@ public class AuctionController {
 	
 	@Autowired
 	private AuctionService auctionService;
-	
-	// ��Ӿ�
+
+    // ��Ӿ�
 	@RequestMapping("/addAuction")
 	public String addAuction(HttpServletRequest request,
 			MultipartFile uploadFile, Auction auction)
@@ -38,8 +38,10 @@ public class AuctionController {
 		uploadFile.transferTo(new File(realPath+"\\"+fileName));
 		
 		auction.setAuction_pic(fileName);
-		auctionService.addAuction(auction);
-		return "redirect:/private/getAll.do";
+
+        auctionService.addAuction(auction);
+
+        return "redirect:/private/getAll.do";
 	}
 	
 	// ɾ��������Ʒ
@@ -47,7 +49,8 @@ public class AuctionController {
 	public String deleteAuction(int auctionId){
 		auctionService.deleteAuction(auctionId);
 		return "redirect:/private/getAll.do";
-	}
+
+    }
 	
 	
 	// �޸ľ�����Ʒ
